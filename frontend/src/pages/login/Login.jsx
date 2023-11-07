@@ -6,7 +6,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../Config';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 function Login() {
@@ -20,6 +20,9 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
+  const user = useSelector(state => state.userReducer.user);
+  const isUser = Object.keys(user).length === 0 ? false : true;
+  // console.log(Object.keys(user).length);
 
 
   const handleLogin = async (e) => {
@@ -72,11 +75,14 @@ function Login() {
         notify2()
         console.log('login error', error);
       }
-
     }
-
-
   };
+  React.useEffect(() => {
+    if (isUser) {
+      navigate('/');
+    }
+    // eslint-disable-next-line
+  }, [isUser]);
 
   return (
     <div className="">

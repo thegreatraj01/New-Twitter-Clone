@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
 import img from '../../images/round-twitter-logo-isolated-white-background_469489-899.avif';
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../../Config';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector } from 'react-redux';
 
 
 function Register() {
@@ -24,6 +25,10 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const user = useSelector(state => state.userReducer.user);
+  const isUser = Object.keys(user).length === 0 ? false : true;
+  // console.log(Object.keys(user).length);
+
 
   const notify = () => toast("Registration Successfull ", {
     type: toast.TYPE.SUCCESS,
@@ -31,13 +36,16 @@ function Register() {
     autoClose: 2000,
     onClose: () => navigate('/login')
   });
-  
+
 
   // Use the trim method to remove any whitespace from the input values
 
   useEffect(() => {
-
-  }, [])
+    if (isUser) {
+      navigate('/');
+    }
+    // eslint-disable-next-line
+  }, [isUser]);
 
   const handleRegister = async (e) => {
     e.preventDefault();

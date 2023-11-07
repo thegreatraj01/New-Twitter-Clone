@@ -1,5 +1,6 @@
 .user-underline:hover {
   text-decoration: underline;
+  color: rgb(97, 117, 117);
 }
 
 .cursor-pointer {

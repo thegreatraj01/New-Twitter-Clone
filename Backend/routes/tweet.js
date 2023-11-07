@@ -57,7 +57,7 @@ router.delete('/api/deletetweet/:id', verifyuser, async (req, res) => {
 //all users tweets explore 
 router.get("/api/exploretweet", verifyuser, async (req, res) => {
     try {
-        const dbPosts = await Tweets.find().populate("tweetedBy", "_id name profilePic");
+        const dbPosts = await Tweets.find().populate("tweetedBy", "_id name profilePic username");
         res.status(200).json({ posts: dbPosts });
     } catch (error) {
         console.log(error);

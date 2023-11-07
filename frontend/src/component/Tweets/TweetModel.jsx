@@ -4,11 +4,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CachedIcon from '@mui/icons-material/Cached';
+import formatDistance from "date-fns/formatDistance";
+import { useSelector } from 'react-redux';
 
-function TweetModel() {
+function TweetModel({ tweet }) {
+  // console.log(tweet);
+
+  const user = useSelector(state => state.userReducer.user)
+  console.log(user._id);
+  // debugger;
 
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState('');
+
+  const dateStr = formatDistance(new Date(tweet.createdAt), new Date());
 
   const handleCommentClick = () => {
     setShowCommentBox((prevShowCommentBox) => !prevShowCommentBox);
@@ -25,15 +34,15 @@ function TweetModel() {
     setShowCommentBox(false);
   };
   return (
-    <div className="bg-body-tertiary p-3 border border-white mt-2">
+    <div className="bg-body-tertiary p-3 border border-light-subtle mt-2 m-1">
       {/* first row */}
       <div className="row">
         {/* for image */}
         <div className="col-10 d-flex">
-          <img className='rounded-circle bg-primary' src="/twitter-logo.png" alt="profilepic" width="50" height="50" />
+          <img className='rounded-circle bg-primary' src={tweet.tweetedBy.profilePic} alt="profilepic" width="50" height="50" />
           <div className='mt-1'>
-            <span className='fw-bold fs-5 p-1 cursor-pointer user-underline'>@username</span>
-            <span className='fw-medium p-1'>5 days ago</span>
+            <span className='fw-semibold fs-5 p-1 cursor-pointer user-underline'>@{tweet.tweetedBy.username}</span>
+            <span className='fw-medium p-1'>{dateStr}</span>
           </div>
         </div>
 
@@ -46,13 +55,14 @@ function TweetModel() {
       {/* second row  */}
       <div className="row">
         <div className="col-12">
-          <p className='ps-5'>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Exercitationem quae qui amet eveniet recusandae mollitia cum non, magni laborum illo ullam tempore. Dolore.
+          <p className='ps-5 fw-semibold '>
+            {tweet.content}
           </p>
         </div>
-        <div className='col-12'>
-          <img className="w-100 rounded img-fluid" src="https://img.freepik.com/free-photo/rear-view-programmer-working-all-night-long_1098-18697.jpg?size=626&ext=jpg&ga=GA1.1.1507212022.1691076195&semt=sph" alt='tweetpic' />
-        </div>
+        {tweet.image && <div className='col-12'>
+          <img className="w-100 rounded img-fluid" src={tweet.image} alt='tweetpic' />
+        </div>}
+
       </div>
 
       {/* third row */}
@@ -83,7 +93,7 @@ function TweetModel() {
 
       {/* for show comments  */}
       {/* fourth row  */}
-      <div className="row border border-dark-subtle mt-1">
+      <div className="row border  mt-1">
         {/* for image */}
         <div className="col-10 d-flex pt-1">
           <img className='rounded-circle bg-primary' src="/twitter-logo.png" alt="profilepic" width="25" height="25" />
@@ -107,7 +117,7 @@ function TweetModel() {
       </div>
       {/* for show comments  */}
       {/* fourth row  */}
-      <div className="row border border-dark-subtle mt-1">
+      <div className="row border  mt-1">
         {/* for image */}
         <div className="col-10 d-flex pt-1">
           <img className='rounded-circle bg-primary' src="/twitter-logo.png" alt="profilepic" width="25" height="25" />
