@@ -16,10 +16,12 @@ const LeftSidebar = () => {
             type: "LOGOUT"
         })
     }
-    const user = useSelector(state => state.userReducer.user.name);
-    const user2 = useSelector(state => state.userReducer.user);
+
+    const user = useSelector(state => state.userReducer.user);
+    const isUser = Object.keys(user).length === 0 ? false : true;
+    // console.log(Object.keys(user).length);
     // console.log(user);
-    // console.log(user2._id);
+  
 
     return (
 
@@ -35,7 +37,7 @@ const LeftSidebar = () => {
                         className="ml-md-3"
                     />
                 </div>
-                {user ?
+                {isUser ?
                     <>
                         <Link to="/" className='link'>
                             <div className="d-flex align-items-center gap-3 px-2 py-1 rounded-pill border border-dark-subtle icons">
@@ -49,7 +51,7 @@ const LeftSidebar = () => {
                                 <p>Explore</p>
                             </div>
                         </Link>
-                        <Link to={`/profile/${user2._id}`}className='link'>
+                        <Link to={`/profile/${user._id}`}className='link'>
                             <div className="d-flex align-items-center gap-3 px-2  py-1 rounded-pill border border-dark-subtle icons">
                                 <PersonIcon fontSize="large" />
                                 <p>Profile</p>
@@ -58,7 +60,7 @@ const LeftSidebar = () => {
                     </>
                     : ""}
 
-                {!user2 ?
+                {!isUser ?
                     <>
                         <Link to="/login" className='link'>
                             <div className="d-flex align-items-center gap-3 px-2  py-1 rounded-pill border border-dark-subtle icons">
@@ -79,7 +81,7 @@ const LeftSidebar = () => {
 
             <div className="d-flex justify-content-between">
 
-                {user ?
+                {isUser ?
                     <>
                         <div>
                             <p className="fw-bold">user</p>

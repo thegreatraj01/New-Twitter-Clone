@@ -67,24 +67,44 @@ router.get("/api/exploretweet", verifyuser, async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------
 // timeline tweet 
-
-router.get("/api/timelinetweert",verifyuser,async (req, res) => {
+router.get("/api/timelinetweets", verifyuser, async (req, res) => {
     try {
-        // console.log(req.headers.authorization);
       const currentUser = await user.findById(req.user._id);
-      const userTweets = await Tweets.find({ tweetedBy: currentUser._id });
-      const followersTweets = await Promise.all(
-        currentUser.following.map((followerId) => {
-          return Tweets.find({ userId: followerId });
-        })
-      );
   
-      res.status(200).json(userTweets.concat(...followersTweets));
+      // Get tweets of the current user's followers
+      const followersTweets = await Tweets.find({ tweetedBy: { $in: currentUser.followers } });
+  
+      // Get tweets of users the current user is following
+      const followingTweets = await Tweets.find({ tweetedBy: { $in: currentUser.following } });
+  
+      // Combine the follower's tweets and following tweets
+      const timelineTweets = followersTweets.concat(followingTweets);
+  
+      res.status(200).json(timelineTweets);
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: 'Server error' });
     }
   });
+  
+
+// router.get("/api/timelinetweert",verifyuser,async (req, res) => {
+//     try {
+//         // console.log(req.headers.authorization);
+//       const currentUser = await user.findById(req.user._id);
+//       const userTweets = await Tweets.find({ tweetedBy: currentUser._id });
+//       const followersTweets = await Promise.all(
+//         currentUser.following.map((followerId) => {
+//           return Tweets.find({ userId: followerId });
+//         })
+//       );
+  
+//       res.status(200).json(userTweets.concat(...followersTweets));
+//     } catch (err) {
+//       console.log(err);
+//       res.status(500).json({ error: 'Server error' });
+//     }
+//   });
 // ------------------------------------------------------------------------------------------------------
 
 // current user tweet 
