@@ -1,15 +1,13 @@
 import React from 'react'
+import TweetModel from '../../component/Tweets/TweetModel'
 
 const Home = () => {
   return (
-    <div className='row'>
-        <div className="col">
+    <div>
 
-        </div>
-        <div className="col">
-            
-        </div>
-
+      <TweetModel />
+      <TweetModel />
+      <TweetModel />
     </div>
   )
 }

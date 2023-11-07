@@ -24,7 +24,7 @@ function App() {
         </div> )
       }
 
-      <div className='col-5 scrollable-content'>
+      <div className='col-5 scrollable-content p-0 m-0'>
         <Routes>
           {isLoginPage && <Route path='/login' element={<Login />} />}
           {isRegisterPage && <Route path='/register' element={<Register />} />}
