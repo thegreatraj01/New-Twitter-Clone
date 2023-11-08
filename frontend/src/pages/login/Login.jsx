@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CancelIcon from '@mui/icons-material/Cancel';
-import img from '../../images/round-twitter-logo-isolated-white-background_469489-899.avif';
+import img from '../../images/twitter-logo.jpg';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BASE_URL } from '../../Config';

@@ -69,24 +69,24 @@ router.get("/api/exploretweet", verifyuser, async (req, res) => {
 // timeline tweet 
 router.get("/api/timelinetweets", verifyuser, async (req, res) => {
     try {
-      const currentUser = await user.findById(req.user._id);
-  
-      // Get tweets of the current user's followers
-      const followersTweets = await Tweets.find({ tweetedBy: { $in: currentUser.followers } });
-  
-      // Get tweets of users the current user is following
-      const followingTweets = await Tweets.find({ tweetedBy: { $in: currentUser.following } });
-  
-      // Combine the follower's tweets and following tweets
-      const timelineTweets = followersTweets.concat(followingTweets);
-  
-      res.status(200).json(timelineTweets);
+        const currentUser = await user.findById(req.user._id);
+
+        // Get tweets of the current user's followers
+        const followersTweets = await Tweets.find({ tweetedBy: { $in: currentUser.followers } });
+
+        // Get tweets of users the current user is following
+        const followingTweets = await Tweets.find({ tweetedBy: { $in: currentUser.following } });
+
+        // Combine the follower's tweets and following tweets
+        const timelineTweets = followersTweets.concat(followingTweets);
+
+        res.status(200).json(timelineTweets);
     } catch (err) {
-      console.log(err);
-      res.status(500).json({ error: 'Server error' });
+        console.log(err);
+        res.status(500).json({ error: 'Server error' });
     }
-  });
-  
+});
+
 
 // router.get("/api/timelinetweert",verifyuser,async (req, res) => {
 //     try {
@@ -98,7 +98,7 @@ router.get("/api/timelinetweets", verifyuser, async (req, res) => {
 //           return Tweets.find({ userId: followerId });
 //         })
 //       );
-  
+
 //       res.status(200).json(userTweets.concat(...followersTweets));
 //     } catch (err) {
 //       console.log(err);
@@ -120,11 +120,11 @@ router.get("/api/myalltweet", verifyuser, async (req, res) => {
 // ---------------------------------------------------------------------------------------------------------
 
 //api for like or disdike tweet both function in one api call
-router.put("/api/like/dislike/:id", verifyuser, async (req, res) => {
+router.put("/api/like/dislike/:id", async (req, res) => {
     try {
-        let userId = req.user._id.toString().replace("ObjectId(\"", "").replace("\")", ""); 
+        let userId = req.body.userid;
         // userId = userId.replace("ObjectId(\"", "").replace("\")", "");
-        
+        // console.log(req.body.userid);
         const tweet = await Tweets.findById(req.params.id);
 
         if (!tweet.likes.includes(userId)) {
@@ -158,7 +158,7 @@ router.put('/api/comment/:id', verifyuser, async (req, res) => {
         if (!tweet) {
             return res.status(404).json({ error: 'Tweet not found' });
         }
-        tweet.comments.push({ commentText, commentedBy:req.user._id }); // Corrected line
+        tweet.comments.push({ commentText, commentedBy: req.user._id }); // Corrected line
         const updatedTweet = await tweet.save();
 
         res.status(200).json({ message: 'Comment added successfully', updatedTweet });
@@ -174,7 +174,7 @@ router.put('/api/retweet/:id', verifyuser, async (req, res) => {
     try {
         const { id } = req.params;
         const tweet = await Tweets.findById(id);
-       
+
         if (!tweet) {
             return res.status(404).json({ error: 'Tweet not found' });
         }
@@ -202,7 +202,7 @@ router.put('/api/retweet/:id', verifyuser, async (req, res) => {
 
 router.get('/api/retweetbyuser', verifyuser, async (req, res) => {
     try {
-        
+
         const retweetedTweets = await Tweets.find({ retweetBy: req.user._id });
         if (!retweetedTweets) {
             return res.status(404).json({ error: 'No retweeted tweets found for this user' });

@@ -84,8 +84,8 @@ const LeftSidebar = () => {
                 {isUser ?
                     <>
                         <div>
-                            <p className="fw-bold">user</p>
-                            <p className="fw-bold">@username</p>
+                            <p className="fw-bold">{user.name}</p>
+                            <p className="fw-bold">@{user.username}</p>
                         </div>
                         <div>
 

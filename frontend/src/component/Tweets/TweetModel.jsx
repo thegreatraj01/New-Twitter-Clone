@@ -6,13 +6,19 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CachedIcon from '@mui/icons-material/Cached';
 import formatDistance from "date-fns/formatDistance";
 import { useSelector } from 'react-redux';
+import { BASE_URL } from '../../Config';
+// import CONFIG_OBJ from '../../Config';
+import axios from 'axios';
 
 function TweetModel({ tweet }) {
   // console.log(tweet);
 
+
+
   const user = useSelector(state => state.userReducer.user)
-  console.log(user._id);
+  // console.log(user._id);
   // debugger;
+
 
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState('');
@@ -33,6 +39,26 @@ function TweetModel({ tweet }) {
     setComment('');
     setShowCommentBox(false);
   };
+
+
+  // function for handle like 
+  const handlelike = async () => {
+    const userid = { userid: user._id }
+    try {
+      const data = await axios.put(`${BASE_URL}/like/dislike/${tweet._id}`, userid);
+      console.log(data);
+    } catch (error) {
+      if (error.response) {
+        console.log('Request failed with status:', error.response.status);
+        console.log('Response data:', error.response.data);
+      } else {
+        console.log('Network error:', error.message);
+      }
+    }
+
+  }
+
+
   return (
     <div className="bg-body-tertiary p-3 border border-light-subtle mt-2 m-1">
       {/* first row */}
@@ -47,9 +73,10 @@ function TweetModel({ tweet }) {
         </div>
 
         <div className="col text-end">
-          <div className='cursor-pointer'>
+          {user._id === tweet.tweetedBy._id && <div className='cursor-pointer'>
             <DeleteIcon />
-          </div>
+          </div>}
+
         </div>
       </div>
       {/* second row  */}
@@ -67,11 +94,11 @@ function TweetModel({ tweet }) {
 
       {/* third row */}
       <div className="row mt-3">
-        <div className="col-4 text-center cursor-pointer">
-          <FavoriteBorderIcon /> Like
+        <div className="col-4 text-center cursor-pointer" onClick={handlelike}>
+          <FavoriteBorderIcon /> {!tweet.likes.length === 0 && <span>{tweet.likes.length}</span>}
         </div>
         <div className="col-4 text-center cursor-pointer" onClick={handleCommentClick}>
-          <ChatBubbleOutlineIcon /> Comment
+          <ChatBubbleOutlineIcon />
         </div>
         <div className="col-4 text-center cursor-pointer">
           <CachedIcon /> Retweet

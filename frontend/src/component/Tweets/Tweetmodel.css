@@ -1,8 +1,11 @@
 .user-underline:hover {
   text-decoration: underline;
-  color: rgb(97, 117, 117);
+  color: rgb(30, 175, 232);
+  font-family: 'Roboto', sans-serif;
 }
-
+.user-underline{
+  font-family: 'Roboto', sans-serif;
+}
 .cursor-pointer {
   cursor: pointer;
 }
