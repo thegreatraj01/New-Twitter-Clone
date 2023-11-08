@@ -23,6 +23,7 @@ const connect = () => {
   mongoose.set("strictQuery", false);
   mongoose
     .connect(process.env.MONGO)
+   
     .then(() => {
       console.log("connect to mongodb database");
     })
