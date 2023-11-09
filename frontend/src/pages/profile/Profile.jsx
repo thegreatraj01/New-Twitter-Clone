@@ -2,9 +2,19 @@ import React from 'react';
 import './Profile.css'; // You can create your own CSS file for styling
 import { Avatar } from '@mui/material'; // You can use Material-UI Avatar for the profile picture
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import AllTweet from '../../component/Alltweets/AllTweet';
+import CreateTweet from '../../component/CreateTweet/CreateTweet';
 function Profile() {
   return (
     <div className="container">
+      {/* row for contain tweet model  */}
+      <div className='row '>
+        <div className=" col-12 d-flex justify-content-end">
+          <CreateTweet />
+        </div>
+      </div>
+
+      
       {/* first row  */}
       <div className="row">
         <div className="col-12 profile-sec">
@@ -42,8 +52,10 @@ function Profile() {
           </ul>
         </div>
       </div>
-
-
+      {/* for showing tweets  */}
+      <div className="row">
+        <AllTweet />
+      </div>
     </div>
   );
 }

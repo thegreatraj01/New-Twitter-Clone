@@ -2,17 +2,21 @@ import React, { useState } from 'react';
 import './Tweetmodel.css';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CachedIcon from '@mui/icons-material/Cached';
 import formatDistance from "date-fns/formatDistance";
 import { useSelector } from 'react-redux';
 import { BASE_URL } from '../../Config';
+import CONFIG_OBJ from '../../Config';
 // import CONFIG_OBJ from '../../Config';
 import axios from 'axios';
+import { Link, useLocation } from 'react-router-dom';
 
-function TweetModel({ tweet }) {
+function TweetModel({ tweet, setTweets }) {
   // console.log(tweet);
 
+  const location = useLocation().pathname
 
 
   const user = useSelector(state => state.userReducer.user)
@@ -42,21 +46,29 @@ function TweetModel({ tweet }) {
 
 
   // function for handle like 
-  const handlelike = async () => {
+  const handlelike = async (e) => {
+    e.preventDefault();
     const userid = { userid: user._id }
     try {
+      // for like 
       const data = await axios.put(`${BASE_URL}/like/dislike/${tweet._id}`, userid);
-      console.log(data);
-    } catch (error) {
-      if (error.response) {
-        console.log('Request failed with status:', error.response.status);
-        console.log('Response data:', error.response.data);
-      } else {
-        console.log('Network error:', error.message);
-      }
-    }
+      console.log(data)
 
+      if (location.includes("profile")) {
+        const newData = await axios.get(`${BASE_URL}/myalltweet`, CONFIG_OBJ);
+        setTweets(newData.data);
+      } else if (location.includes("explore")) {
+        const newData = await axios.get(`${BASE_URL}/exploretweet`, CONFIG_OBJ);
+        console.log(newData.data.posts)
+        // debugger;
+        setTweets(newData.data.posts);
+      }
+
+    } catch (error) {
+      console.log('Network error:', error.message);
+    }
   }
+
 
 
   return (
@@ -67,7 +79,7 @@ function TweetModel({ tweet }) {
         <div className="col-10 d-flex">
           <img className='rounded-circle bg-primary' src={tweet.tweetedBy.profilePic} alt="profilepic" width="50" height="50" />
           <div className='mt-1'>
-            <span className='fw-semibold fs-5 p-1 cursor-pointer user-underline'>@{tweet.tweetedBy.username}</span>
+            <Link className='fw-semibold fs-5 p-1 cursor-pointer user-underline' to={`/profile/${tweet.tweetedBy._id}`}>@{tweet.tweetedBy.username} </Link>
             <span className='fw-medium p-1'>{dateStr}</span>
           </div>
         </div>
@@ -95,7 +107,8 @@ function TweetModel({ tweet }) {
       {/* third row */}
       <div className="row mt-3">
         <div className="col-4 text-center cursor-pointer" onClick={handlelike}>
-          <FavoriteBorderIcon /> {!tweet.likes.length === 0 && <span>{tweet.likes.length}</span>}
+          {tweet.likes.includes(user._id) ? <FavoriteIcon className='text-danger' /> : <FavoriteBorderIcon />}
+          <span>{tweet.likes.length} </span>
         </div>
         <div className="col-4 text-center cursor-pointer" onClick={handleCommentClick}>
           <ChatBubbleOutlineIcon />
