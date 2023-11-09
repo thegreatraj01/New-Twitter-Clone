@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../../Config';
-import CONFIG_OBJ from '../../Config';
+// import CONFIG_OBJ from '../../Config';
 import TweetModel from '../Tweets/TweetModel';
 import { useLocation } from 'react-router-dom';
 
@@ -19,6 +19,13 @@ const AllTweet = () => {
     //             setTweets(newData.data);
     // }
 
+    const CONFIG_OBJ = {
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": localStorage.getItem("veryfication-token")
+        }
+    };
+   
     const fetchdata = async () => {
         try {
             if (location.includes("explore")) {
@@ -55,7 +62,7 @@ const AllTweet = () => {
     return (
         <div>
             {tweets && tweets.map(tweet => (
-                <TweetModel key={tweet._id} tweet={tweet} setTweets={setTweets} />
+                <TweetModel key={tweet._id} tweet={tweet} setTweets={setTweets} fetchdata={fetchdata} />
             ))}
         </div>
     );

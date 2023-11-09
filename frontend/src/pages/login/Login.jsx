@@ -43,7 +43,7 @@ function Login() {
         const resp = await axios.post(`${BASE_URL}/auth/login`, user);
         if (resp.status === 200) {
           setLoder(false);
-          localStorage.setItem("veryfication token", resp.data.result.token);
+          localStorage.setItem("veryfication-token", resp.data.result.token);
           localStorage.setItem("user", JSON.stringify(resp.data.result.user));
 
           setEmail("");

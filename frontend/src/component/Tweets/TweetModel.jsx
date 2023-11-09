@@ -8,13 +8,18 @@ import CachedIcon from '@mui/icons-material/Cached';
 import formatDistance from "date-fns/formatDistance";
 import { useSelector } from 'react-redux';
 import { BASE_URL } from '../../Config';
-import CONFIG_OBJ from '../../Config';
-// import CONFIG_OBJ from '../../Config';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 
-function TweetModel({ tweet, setTweets }) {
-  // console.log(tweet);
+function TweetModel({ tweet, setTweets ,fetchdata }) {
+  // console.log(tweet._id);
+
+  const CONFIG_OBJ = {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": localStorage.getItem("veryfication-token")
+    }
+  };
 
   const location = useLocation().pathname
 
@@ -52,14 +57,14 @@ function TweetModel({ tweet, setTweets }) {
     try {
       // for like 
       const data = await axios.put(`${BASE_URL}/like/dislike/${tweet._id}`, userid);
-      console.log(data)
+      console.log("like dislike data ", data)
 
       if (location.includes("profile")) {
         const newData = await axios.get(`${BASE_URL}/myalltweet`, CONFIG_OBJ);
         setTweets(newData.data);
       } else if (location.includes("explore")) {
         const newData = await axios.get(`${BASE_URL}/exploretweet`, CONFIG_OBJ);
-        console.log(newData.data.posts)
+        // console.log(newData.data.posts)
         // debugger;
         setTweets(newData.data.posts);
       }
@@ -69,6 +74,20 @@ function TweetModel({ tweet, setTweets }) {
     }
   }
 
+
+  // function for delete a tweet 
+  const handletweetdelete = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await axios.delete(`${BASE_URL}/deletetweet/${tweet._id}`, CONFIG_OBJ);
+      // calling the parent function for fetch new data 
+      fetchdata();
+      console.log(data)
+    } catch (error) {
+      console.log('delete tweet  error:', error);
+    }
+
+  }
 
 
   return (
@@ -86,7 +105,8 @@ function TweetModel({ tweet, setTweets }) {
 
         <div className="col text-end">
           {user._id === tweet.tweetedBy._id && <div className='cursor-pointer'>
-            <DeleteIcon />
+            <button className='border' onClick={handletweetdelete}><DeleteIcon /> </button>
+
           </div>}
 
         </div>

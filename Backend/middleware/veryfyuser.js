@@ -4,8 +4,10 @@ const bcryptjs = require('bcrypt');
 
 const verifyuser = async (req, res, next) => {
     const { authorization } = req.headers;
+    // console.log(authorization);
+    // console.log(req.headers)
     if (!authorization) {
-        res.status(401).json({ message: "user not logged in" });
+        res.status(401).json({ message: "user not logged in hai" });
     } else {
         const token = authorization;
         // console.log(token);//ityukkj==--0ukly=09hjkfhkhjkhjk---------------------------
