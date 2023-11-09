@@ -10,9 +10,9 @@ import { useSelector } from 'react-redux';
 import { BASE_URL } from '../../Config';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
-
-function TweetModel({ tweet, setTweets ,fetchdata }) {
-  // console.log(tweet._id);
+import { ToastContainer, toast } from 'react-toastify';
+function TweetModel({ tweet, setTweets, fetchdata }) {
+  // console.log(tweet);
 
   const CONFIG_OBJ = {
     headers: {
@@ -33,6 +33,8 @@ function TweetModel({ tweet, setTweets ,fetchdata }) {
   const [comment, setComment] = useState('');
 
   const dateStr = formatDistance(new Date(tweet.createdAt), new Date());
+  console.log(formatDistance(new Date(tweet.createdAt), new Date()));
+
 
   const handleCommentClick = () => {
     setShowCommentBox((prevShowCommentBox) => !prevShowCommentBox);
@@ -42,9 +44,31 @@ function TweetModel({ tweet, setTweets ,fetchdata }) {
     setComment(e.target.value);
   };
 
-  const handleCommentSubmit = () => {
-    // You can handle the comment submission logic here, e.g., send it to a server or update your state.
-    // Reset the comment box and hide it after submission.
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (comment === "") {
+      toast.warn('🦄 Comment box cannot be empty ', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
+    } else {
+      try {
+        const data = await axios.put(`${BASE_URL}/comment/${tweet._id}`, { commentText: comment }, CONFIG_OBJ);
+        console.log(data);
+        // calling parent function 
+        fetchdata();
+      } catch (error) {
+        console.log("comment a tweet error ", error);
+      }
+    }
+
+
     setComment('');
     setShowCommentBox(false);
   };
@@ -89,6 +113,18 @@ function TweetModel({ tweet, setTweets ,fetchdata }) {
 
   }
 
+  // function for delete a comment 
+  const handlecommentdelete = async (id) => {
+    try {
+      const data = await axios.delete(`${BASE_URL}/tweet/${tweet._id}/comment/${id}`, CONFIG_OBJ);
+      fetchdata();
+      console.log("delete comment", data)
+
+    } catch (error) {
+      console.log('delete tweet error:', error);
+    }
+
+  }
 
   return (
     <div className="bg-body-tertiary p-3 border border-light-subtle mt-2 m-1">
@@ -106,7 +142,6 @@ function TweetModel({ tweet, setTweets ,fetchdata }) {
         <div className="col text-end">
           {user._id === tweet.tweetedBy._id && <div className='cursor-pointer'>
             <button className='border' onClick={handletweetdelete}><DeleteIcon /> </button>
-
           </div>}
 
         </div>
@@ -153,53 +188,33 @@ function TweetModel({ tweet, setTweets ,fetchdata }) {
 
       {/* for show comments  */}
       {/* fourth row  */}
-      <div className="row border  mt-1">
-        {/* for image */}
-        <div className="col-10 d-flex pt-1">
-          <img className='rounded-circle bg-primary' src="/twitter-logo.png" alt="profilepic" width="25" height="25" />
-          <div className='mt-1'>
-            <span className='fw-bold p-1 cursor-pointer user-underline'>@username</span>
-            <span className='fw-medium p-1'>5 days ago</span>
+      {tweet.comments.map((comment, index) => (
+        <div key={index} className="row border mt-1">
+          <div className="col-10 d-flex pt-1">
+            <img className="rounded-circle bg-primary" src={comment.commentedBy.profilePic} alt="profilepic" width="25" height="25" />
+            <div className="mt-1">
+              <span className="fw-bold p-1 cursor-pointer user-underline">@{comment.commentedBy.username}</span>
+              <span className="fw-medium p-1">
+                {formatDistance(new Date(comment.commentedAt), new Date(), { addSuffix: true })}
+              </span>
+            </div>
           </div>
-        </div>
+          <div className="col text-end">
+            {comment.commentedBy._id == user._id && <div className="cursor-pointer">
+              <DeleteIcon onClick={(e) => { handlecommentdelete(comment._id) }} />
+            </div>}
 
-        <div className="col text-end">
-          <div className='cursor-pointer'>
-            <DeleteIcon />
+          </div>
+          <div className="col-12">
+            <p className="ps-4 fs-6 fw-bold mt-2">{comment.commentText}</p>
           </div>
         </div>
-        {/* second row  */}
-        <div className="col-12">
-          <p className='ps-5'>
-            Lorem ipsum dolor sit amet c non, magni laborum illo ullam tempore. Dolore.
-          </p>
-        </div>
-      </div>
-      {/* for show comments  */}
-      {/* fourth row  */}
-      <div className="row border  mt-1">
-        {/* for image */}
-        <div className="col-10 d-flex pt-1">
-          <img className='rounded-circle bg-primary' src="/twitter-logo.png" alt="profilepic" width="25" height="25" />
-          <div className='mt-1'>
-            <span className='fw-bold p-1 cursor-pointer user-underline'>@username</span>
-            <span className='fw-medium p-1'>5 days ago</span>
-          </div>
-        </div>
+      ))}
 
-        <div className="col text-end">
-          <div className='cursor-pointer'>
-            <DeleteIcon />
-          </div>
-        </div>
-        {/* second row  */}
-        <div className="col-12">
-          <p className='ps-5'>
-            Lorem ipsum dolor sit amet c non, magni laborum illo ullam tempore. Dolore.
-          </p>
-        </div>
-      </div>
 
+
+      {/* tost coantainer  */}
+      <ToastContainer />
 
     </div>
   )

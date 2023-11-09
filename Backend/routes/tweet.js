@@ -57,7 +57,11 @@ router.delete('/api/deletetweet/:id', verifyuser, async (req, res) => {
 //all users tweets explore 
 router.get("/api/exploretweet", verifyuser, async (req, res) => {
     try {
-        const dbPosts = await Tweets.find().populate("tweetedBy", "_id name profilePic username");
+        const dbPosts = await Tweets.find().populate("tweetedBy", "_id name profilePic username").populate({
+            path: "comments.commentedBy",
+            model: "User",
+            select: "_id name profilePic username", // Specify the fields you want to populate
+        });
         res.status(200).json({ posts: dbPosts });
     } catch (error) {
         console.log(error);
@@ -146,8 +150,9 @@ router.put("/api/like/dislike/:id", async (req, res) => {
 router.put('/api/comment/:id', verifyuser, async (req, res) => {
     try {
         const { id } = req.params;
-        const commentText = req.body['commentText '];
-        // console.log(commentText);
+        // const commentText = req.body['commentText '];
+        const commentText = req.body.commentText;
+        // console.log(commentText,req.body,req.body.commentText);
         // console.log(req.body);
         // let commentedBy = req.user._id.toString().replace("ObjectId(\"", "").replace("\")", ""); 
 
@@ -214,6 +219,40 @@ router.get('/api/retweetbyuser', verifyuser, async (req, res) => {
     }
 });
 // ---------------------------------------------------------------------------------------------------------
+// Define a route to delete a comment
+router.delete('/api/tweet/:tweetId/comment/:commentId', verifyuser, async (req, res) => {
+    try {
+        const { tweetId, commentId } = req.params;
+        
+        // Ensure that the user has the necessary permissions to delete the comment
+        const tweet = await Tweets.findById(tweetId);
+        if (!tweet) {
+            return res.status(404).json({ error: 'Tweet not found' });
+        }
+        // Find the comment in the tweet's comments array
+        const commentIndex = tweet.comments.findIndex((comment) => comment._id.toString() == commentId.toString());
+       
+        // const commentIndex = tweet.comments.findIndex(comment => comment._id == (commentId));
+        if (commentIndex === -1) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
 
+        // Check if the user trying to delete the comment is the one who created it
+        if (!tweet.comments[commentIndex].commentedBy.equals(req.user._id)) {
+            return res.status(403).json({ error: 'Permission denied' });
+        }
+
+        // Remove the comment from the comments array
+        tweet.comments.splice(commentIndex, 1);
+
+        // Save the tweet with the comment removed
+        await tweet.save();
+
+        res.status(200).json({ message: 'Comment deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 module.exports = router;
