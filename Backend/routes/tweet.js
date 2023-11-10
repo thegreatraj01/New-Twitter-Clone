@@ -175,10 +175,11 @@ router.put('/api/comment/:id', verifyuser, async (req, res) => {
 
 // ---------------------------------------------------------------------------------------------------------
 // Retweet or undo retweet a tweet
-router.put('/api/retweet/:id', verifyuser, async (req, res) => {
+router.put('/api/retweet/:id',verifyuser, async (req, res) => {
     try {
         const { id } = req.params;
         const tweet = await Tweets.findById(id);
+        console.log(id)
 
         if (!tweet) {
             return res.status(404).json({ error: 'Tweet not found' });
@@ -223,7 +224,7 @@ router.get('/api/retweetbyuser', verifyuser, async (req, res) => {
 router.delete('/api/tweet/:tweetId/comment/:commentId', verifyuser, async (req, res) => {
     try {
         const { tweetId, commentId } = req.params;
-        
+
         // Ensure that the user has the necessary permissions to delete the comment
         const tweet = await Tweets.findById(tweetId);
         if (!tweet) {
@@ -231,7 +232,7 @@ router.delete('/api/tweet/:tweetId/comment/:commentId', verifyuser, async (req, 
         }
         // Find the comment in the tweet's comments array
         const commentIndex = tweet.comments.findIndex((comment) => comment._id.toString() == commentId.toString());
-       
+
         // const commentIndex = tweet.comments.findIndex(comment => comment._id == (commentId));
         if (commentIndex === -1) {
             return res.status(404).json({ error: 'Comment not found' });

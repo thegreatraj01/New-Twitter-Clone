@@ -23,18 +23,16 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
 
   const location = useLocation().pathname
 
-
   const user = useSelector(state => state.userReducer.user)
   // console.log(user._id);
   // debugger;
+
 
 
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState('');
 
   const dateStr = formatDistance(new Date(tweet.createdAt), new Date());
-  console.log(formatDistance(new Date(tweet.createdAt), new Date()));
-
 
   const handleCommentClick = () => {
     setShowCommentBox((prevShowCommentBox) => !prevShowCommentBox);
@@ -126,6 +124,17 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
 
   }
 
+
+  // function for retweet or undo a retweet 
+  const handleretweet = async () => {
+    try {
+      const data = await axios.put(`${BASE_URL}/retweet/${tweet._id}`, {}, CONFIG_OBJ);
+      console.log('retweet data ', data)
+      fetchdata();
+    } catch (error) {
+      console.log('retweet error:', error);
+    }
+  }
   return (
     <div className="bg-body-tertiary p-3 border border-light-subtle mt-2 m-1">
       {/* first row */}
@@ -169,7 +178,8 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
           <ChatBubbleOutlineIcon />
         </div>
         <div className="col-4 text-center cursor-pointer">
-          <CachedIcon /> Retweet
+          {tweet.retweetBy.includes(user._id) ? <button className='border text-info' onClick={handleretweet}> <CachedIcon /> </button> :
+            <button className='border ' onClick={handleretweet}> <CachedIcon /> </button>}
         </div>
         {/* Comment Box */}
         {showCommentBox && (
@@ -188,6 +198,7 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
 
       {/* for show comments  */}
       {/* fourth row  */}
+      <span>Comments</span>
       {tweet.comments.map((comment, index) => (
         <div key={index} className="row border mt-1">
           <div className="col-10 d-flex pt-1">
@@ -200,7 +211,7 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
             </div>
           </div>
           <div className="col text-end">
-            {comment.commentedBy._id == user._id && <div className="cursor-pointer">
+            {comment.commentedBy._id === user._id && <div className="cursor-pointer">
               <DeleteIcon onClick={(e) => { handlecommentdelete(comment._id) }} />
             </div>}
 
