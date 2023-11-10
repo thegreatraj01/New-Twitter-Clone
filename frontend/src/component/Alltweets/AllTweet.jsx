@@ -3,13 +3,15 @@ import axios from 'axios';
 import { BASE_URL } from '../../Config';
 // import CONFIG_OBJ from '../../Config';
 import TweetModel from '../Tweets/TweetModel';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 
 const AllTweet = () => {
     const [tweets, setTweets] = useState("");
 
     const location = useLocation().pathname;
+    const id = useParams().id
+    // console.log(id);
     // console.log(location)
     // console.log(tweets);
 
@@ -26,21 +28,21 @@ const AllTweet = () => {
         try {
             if (location === ("/explore")) {
                 const newData = await axios.get(`${BASE_URL}/exploretweet`);
-            
                 if (newData.status === 200) {
                     setTweets(newData.data.posts);
                 }
             }
             else if (location.includes("/profile")) {
-                const newData = await axios.get(`${BASE_URL}/myalltweet`, CONFIG_OBJ);
+                const newData = await axios.get(`${BASE_URL}/alltweetsbyuser/${id}`, CONFIG_OBJ);
                 setTweets(newData.data.posts);
+                // console.log(newData.data.posts)
             }
             else if (location === ("/")) {
                 const newData = await axios.get(`${BASE_URL}/timelinetweets`, CONFIG_OBJ);
-                // console.log(newData)
-               
+            
                 if (newData.status === 200) {
-                    setTweets(newData.data.posts);
+                    setTweets(newData.data);
+                  
                 }
             }
         } catch (error) {

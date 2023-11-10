@@ -57,7 +57,7 @@ router.delete('/api/deletetweet/:id', verifyuser, async (req, res) => {
 //all users tweets explore 
 router.get("/api/exploretweet", async (req, res) => {
     try {
-     
+
         const dbPosts = await Tweets.find().populate("tweetedBy", "_id name profilePic username").populate({
             path: "comments.commentedBy",
             model: "User",
@@ -71,19 +71,47 @@ router.get("/api/exploretweet", async (req, res) => {
 
 
 // ------------------------------------------------------------------------------------------------------
-// timeline tweet 
+// timeline tweet and retweets 
 router.get("/api/timelinetweets", verifyuser, async (req, res) => {
     try {
         const currentUser = await user.findById(req.user._id);
 
         // Get tweets of the current user's followers
-        const followersTweets = await Tweets.find({ tweetedBy: { $in: currentUser.followers } });
+        const followersTweets = await Tweets.find({ tweetedBy: { $in: currentUser.followers } }).populate("tweetedBy", "_id name profilePic username").populate({
+            path: "comments.commentedBy",
+            model: "User",
+            select: "_id name profilePic username",
+        });
 
         // Get tweets of users the current user is following
-        const followingTweets = await Tweets.find({ tweetedBy: { $in: currentUser.following } });
+        const followingTweets = await Tweets.find({ tweetedBy: { $in: currentUser.following } }).populate("tweetedBy", "_id name profilePic username").populate({
+            path: "comments.commentedBy",
+            model: "User",
+            select: "_id name profilePic username",
+        });
+
+        // Get tweets that the current user has retweeted
+        const retweetedTweets = await Tweets.find({ retweetBy: req.user._id }).populate("tweetedBy", "_id name profilePic username").populate({
+            path: "comments.commentedBy",
+            model: "User",
+            select: "_id name profilePic username",
+        });
 
         // Combine the follower's tweets and following tweets
-        const timelineTweets = followersTweets.concat(followingTweets);
+        let timelineTweets = followersTweets.concat(followingTweets, retweetedTweets);
+
+        // Use a Set to keep track of unique tweet IDs
+        const uniqueTweetIds = new Set();
+
+        // Filter out duplicate tweets based on their unique IDs
+        timelineTweets = timelineTweets.filter((tweet) => {
+            if (uniqueTweetIds.has(tweet._id.toString())) {
+                return false; // Skip duplicate tweet
+            }
+
+            uniqueTweetIds.add(tweet._id.toString()); // Add tweet ID to the set
+            return true; // Include unique tweet
+        });
 
         res.status(200).json(timelineTweets);
     } catch (err) {
@@ -93,34 +121,37 @@ router.get("/api/timelinetweets", verifyuser, async (req, res) => {
 });
 
 
-// router.get("/api/timelinetweert",verifyuser,async (req, res) => {
-//     try {
-//         // console.log(req.headers.authorization);
-//       const currentUser = await user.findById(req.user._id);
-//       const userTweets = await Tweets.find({ tweetedBy: currentUser._id });
-//       const followersTweets = await Promise.all(
-//         currentUser.following.map((followerId) => {
-//           return Tweets.find({ userId: followerId });
-//         })
-//       );
 
-//       res.status(200).json(userTweets.concat(...followersTweets));
-//     } catch (err) {
-//       console.log(err);
-//       res.status(500).json({ error: 'Server error' });
-//     }
-//   });
-// ------------------------------------------------------------------------------------------------------
 
-// current user tweet 
-router.get("/api/myalltweet", verifyuser, async (req, res) => {
+// current user tweet and profile tweet 
+router.get("/api/alltweetsbyuser/:id", verifyuser, async (req, res) => {
     try {
-        const dbPosts = await Tweets.find({ tweetedBy: req.user._id }).populate("tweetedBy", "_id name profilePic");
-        res.status(200).json({ posts: dbPosts });
+        const { id } = req.params;
+
+        // Get retweeted tweets by the current user
+        const retweetedTweets = await Tweets.find({ retweetBy: id }).populate("tweetedBy", "_id name profilePic username").populate({
+            path: "comments.commentedBy",
+            model: "User",
+            select: "_id name profilePic username", // Specify the fields you want to populate
+        });
+
+        // Get tweets by the specified user
+        const userTweets = await Tweets.find({ tweetedBy: id }).populate("tweetedBy", "_id name profilePic username").populate({
+            path: "comments.commentedBy",
+            model: "User",
+            select: "_id name profilePic username", // Specify the fields you want to populate
+        });
+
+        // Merge retweetedTweets and userTweets into a single array
+        const allTweets = [...userTweets, ...retweetedTweets];
+
+        res.status(200).json({ posts: allTweets });
     } catch (error) {
         console.log(error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 // ---------------------------------------------------------------------------------------------------------
 
@@ -180,10 +211,10 @@ router.put('/api/retweet/:id', verifyuser, async (req, res) => {
     try {
         const { id } = req.params;
         const tweet = await Tweets.findById(id);
-        console.log(id)
+        // console.log(id)
 
-        if (!tweet) {
-            return res.status(404).json({ error: 'Tweet not found' });
+        if (String(tweet.tweetedBy) === String(req.user._id)){
+            return res.status(404).json({ error: 'you can not do that ' });
         }
         // Check if the user has already retweeted this tweet
         if (tweet.retweetBy.includes(req.user._id)) {
@@ -207,19 +238,19 @@ router.put('/api/retweet/:id', verifyuser, async (req, res) => {
 
 // get all retweetBy the user 
 
-router.get('/api/retweetbyuser', verifyuser, async (req, res) => {
-    try {
+// router.get('/api/retweetbyuser', verifyuser, async (req, res) => {
+//     try {
 
-        const retweetedTweets = await Tweets.find({ retweetBy: req.user._id });
-        if (!retweetedTweets) {
-            return res.status(404).json({ error: 'No retweeted tweets found for this user' });
-        }
-        res.status(200).json({ message: 'Retweeted tweets fetched successfully', retweetedTweets });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
+//         const retweetedTweets = await Tweets.find({ retweetBy: req.user._id });
+//         if (!retweetedTweets) {
+//             return res.status(404).json({ error: 'No retweeted tweets found for this user' });
+//         }
+//         res.status(200).json({ message: 'Retweeted tweets fetched successfully', retweetedTweets });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ error: 'Server error' });
+//     }
+// });
 // ---------------------------------------------------------------------------------------------------------
 // Define a route to delete a comment
 router.delete('/api/tweet/:tweetId/comment/:commentId', verifyuser, async (req, res) => {

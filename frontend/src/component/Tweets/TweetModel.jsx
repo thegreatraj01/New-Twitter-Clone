@@ -79,7 +79,8 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
       try {
         // for like 
         const data = await axios.put(`${BASE_URL}/like/dislike/${tweet._id}`, userid);
-        console.log("like dislike data ", data)
+        console.log("like dislike data ", data);
+        fetchdata();
       } catch (error) {
         console.log('Network error:', error.message);
       }
@@ -139,7 +140,7 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
         <div className="col-10 d-flex">
           <img className='rounded-circle bg-primary' src={tweet.tweetedBy.profilePic} alt="profilepic" width="50" height="50" />
           <div className='mt-1'>
-            <Link className='fw-semibold fs-5 p-1 cursor-pointer user-underline' to={`/profile/${tweet.tweetedBy._id}`}>@{tweet.tweetedBy.username} </Link>
+            <Link className='fw-semibold fs-5 p-1 cursor-pointer user-underline' to={`/profile/${tweet.tweetedBy._id}`}> <span className='text-black '>@username</span>{tweet.tweetedBy.username} </Link>
             <span className='fw-medium p-1'>{dateStr}</span>
           </div>
         </div>
