@@ -9,7 +9,7 @@ import formatDistance from "date-fns/formatDistance";
 import { useSelector } from 'react-redux';
 import { BASE_URL } from '../../Config';
 import axios from 'axios';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 function TweetModel({ tweet, setTweets, fetchdata }) {
   // console.log(tweet);
@@ -21,7 +21,7 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
     }
   };
 
-  const location = useLocation().pathname
+  // const location = useLocation().pathname
 
   const user = useSelector(state => state.userReducer.user)
   // console.log(user._id);
@@ -71,29 +71,22 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
     setShowCommentBox(false);
   };
 
-
   // function for handle like 
   const handlelike = async (e) => {
     e.preventDefault();
     const userid = { userid: user._id }
-    try {
-      // for like 
-      const data = await axios.put(`${BASE_URL}/like/dislike/${tweet._id}`, userid);
-      console.log("like dislike data ", data)
-
-      if (location.includes("profile")) {
-        const newData = await axios.get(`${BASE_URL}/myalltweet`, CONFIG_OBJ);
-        setTweets(newData.data);
-      } else if (location.includes("explore")) {
-        const newData = await axios.get(`${BASE_URL}/exploretweet`, CONFIG_OBJ);
-        // console.log(newData.data.posts)
-        // debugger;
-        setTweets(newData.data.posts);
+    if (user._id) {
+      try {
+        // for like 
+        const data = await axios.put(`${BASE_URL}/like/dislike/${tweet._id}`, userid);
+        console.log("like dislike data ", data)
+      } catch (error) {
+        console.log('Network error:', error.message);
       }
-
-    } catch (error) {
-      console.log('Network error:', error.message);
+    } else {
+      alert("You are not loged in ")
     }
+
   }
 
 
@@ -135,6 +128,9 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
       console.log('retweet error:', error);
     }
   }
+
+
+
   return (
     <div className="bg-body-tertiary p-3 border border-light-subtle mt-2 m-1">
       {/* first row */}

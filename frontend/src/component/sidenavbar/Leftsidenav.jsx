@@ -21,7 +21,7 @@ const LeftSidebar = () => {
     const isUser = Object.keys(user).length === 0 ? false : true;
     // console.log(Object.keys(user).length);
     // console.log(user);
-  
+
 
     return (
 
@@ -51,7 +51,8 @@ const LeftSidebar = () => {
                                 <p>Explore</p>
                             </div>
                         </Link>
-                        <Link to={`/profile/${user._id}`}className='link'>
+
+                        <Link to={`/profile/${user._id}`} className='link'>
                             <div className="d-flex align-items-center gap-3 px-2  py-1 rounded-pill border border-dark-subtle icons">
                                 <PersonIcon fontSize="large" />
                                 <p>Profile</p>
@@ -72,6 +73,12 @@ const LeftSidebar = () => {
                             <div className="d-flex align-items-center gap-3 px-2  py-1 rounded-pill border border-dark-subtle icons">
                                 <PersonIcon fontSize="large" />
                                 <p>Register</p>
+                            </div>
+                        </Link>
+                        <Link to="/explore" className='link'>
+                            <div className="d-flex align-items-center gap-3 px-2  py-1 rounded-pill border border-dark-subtle icons">
+                                <TagIcon fontSize="large" />
+                                <p>Explore</p>
                             </div>
                         </Link>
                     </>

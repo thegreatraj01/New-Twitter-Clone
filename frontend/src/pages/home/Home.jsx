@@ -1,9 +1,10 @@
 import React from 'react'
-import TweetModel from '../../component/Tweets/TweetModel'
-import Timeline from '../../component/Timelinetweet/Timeline'
 import AllTweet from '../../component/Alltweets/AllTweet'
+// import { useLocation } from 'react-router-dom'
 
 const Home = () => {
+  // const location = useLocation();
+  // console.log(location)
   return (
     <div>
       <AllTweet/>
@@ -12,4 +13,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Home;

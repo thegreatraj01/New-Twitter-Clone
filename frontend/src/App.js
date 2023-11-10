@@ -34,7 +34,7 @@ function App() {
           {isRegisterPage && <Route path='/register' element={<Register />} />}
 
           {isUser ? <Route path='/' element={<Home />} /> :
-            <Route path='/' element={<Login />} />}
+            <Route path='/' element={<Explore />} />}
 
           <Route path='/profile/:id' element={<Profile />} />
           <Route path='/explore' element={<Explore />} />

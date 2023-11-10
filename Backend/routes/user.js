@@ -69,7 +69,7 @@ router.post('/api/auth/login', async (req, res) => {
 
 // ----------------------------------------------------------------------------------------
 // for getting a single user from the database
-router.get('/api/auth/user/:id', verifyuser, async (req, res) => {
+router.get('/api/profile/:id', async (req, res) => {
     const { id } = req.params;
 
     if (!id) {

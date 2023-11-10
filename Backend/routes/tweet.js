@@ -55,8 +55,9 @@ router.delete('/api/deletetweet/:id', verifyuser, async (req, res) => {
 // ------------------------------------------------------------------------------------------------------
 
 //all users tweets explore 
-router.get("/api/exploretweet", verifyuser, async (req, res) => {
+router.get("/api/exploretweet", async (req, res) => {
     try {
+     
         const dbPosts = await Tweets.find().populate("tweetedBy", "_id name profilePic username").populate({
             path: "comments.commentedBy",
             model: "User",
@@ -175,7 +176,7 @@ router.put('/api/comment/:id', verifyuser, async (req, res) => {
 
 // ---------------------------------------------------------------------------------------------------------
 // Retweet or undo retweet a tweet
-router.put('/api/retweet/:id',verifyuser, async (req, res) => {
+router.put('/api/retweet/:id', verifyuser, async (req, res) => {
     try {
         const { id } = req.params;
         const tweet = await Tweets.findById(id);

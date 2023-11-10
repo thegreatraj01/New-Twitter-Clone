@@ -5,6 +5,9 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import AllTweet from '../../component/Alltweets/AllTweet';
 import CreateTweet from '../../component/CreateTweet/CreateTweet';
 function Profile() {
+
+
+
   return (
     <div className="container">
       {/* row for contain tweet model  */}
@@ -13,7 +16,6 @@ function Profile() {
           <CreateTweet />
         </div>
       </div>
-
       
       {/* first row  */}
       <div className="row">

@@ -12,12 +12,8 @@ const AllTweet = () => {
     const location = useLocation().pathname;
     // console.log(location)
     // console.log(tweets);
-    // debugger;
 
-    // const fetchdata = async () => {
-    //       const newData = await axios.get(`${BASE_URL}/myalltweet`, CONFIG_OBJ);
-    //             setTweets(newData.data);
-    // }
+
 
     const CONFIG_OBJ = {
         headers: {
@@ -25,23 +21,24 @@ const AllTweet = () => {
             "Authorization": localStorage.getItem("veryfication-token")
         }
     };
-   
+
     const fetchdata = async () => {
         try {
-            if (location.includes("explore")) {
-                const newData = await axios.get(`${BASE_URL}/exploretweet`, CONFIG_OBJ);
+            if (location === ("/explore")) {
+                const newData = await axios.get(`${BASE_URL}/exploretweet`);
+            
                 if (newData.status === 200) {
                     setTweets(newData.data.posts);
                 }
             }
-            // else if (location.includes("profile/id")) {
-            //     const newData = await axios.get(`${BASE_URL}/myalltweet`, CONFIG_OBJ);
-            //     if (newData.status === 200) {
-            //         setTweets(newData.data.posts);
-            //     }
-            // }
-            else if (location.includes("/")) {
+            else if (location.includes("/profile")) {
+                const newData = await axios.get(`${BASE_URL}/myalltweet`, CONFIG_OBJ);
+                setTweets(newData.data.posts);
+            }
+            else if (location === ("/")) {
                 const newData = await axios.get(`${BASE_URL}/timelinetweets`, CONFIG_OBJ);
+                // console.log(newData)
+               
                 if (newData.status === 200) {
                     setTweets(newData.data.posts);
                 }

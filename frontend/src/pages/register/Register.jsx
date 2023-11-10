@@ -36,13 +36,13 @@ function Register() {
     autoClose: 2000,
     onClose: () => navigate('/login')
   });
-console.log(img)
+// console.log(img)
 
   // Use the trim method to remove any whitespace from the input values
 
   useEffect(() => {
     if (isUser) {
-      navigate('/');
+      navigate('/explore');
     }
     // eslint-disable-next-line
   }, [isUser]);
@@ -102,7 +102,7 @@ console.log(img)
         <div className='container shadow mt-2'>
 
           <div className="row text-end">
-            <Link to="/">
+            <Link to="/explore">
               <span onClick={() => setShowLogin(false)}> <CancelIcon /> </span>
             </Link>
           </div>

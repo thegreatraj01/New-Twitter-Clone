@@ -53,33 +53,28 @@ function Login() {
             type: "LOGIN",
             payload: resp.data.result.user
           });
-          const notify = () => toast("Login Successfull ", {
-            type: toast.TYPE.SUCCESS,
-            position: toast.POSITION.TOP_RIGHT,
-            autoClose: 1000,
-            onClose: () => navigate('/')
+
+          toast.success('Login successful!', {
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 3500, // Close the toast after 3.5 seconds
+            onClose: () => navigate('/explore') // Navigate when the toast is closed
           });
-
-
-          notify()
         }
       } catch (error) {
         setEmail("");
         setPassword("");
         setLoder(false);
-        const notify2 = () => toast(`${error.response.data.message}`, {
-          type: toast.TYPE.ERROR,
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 2000
+        toast.error('Login failed. Please try again.', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 3000, // Close the toast after 3 seconds
         });
-        notify2()
         console.log('login error', error);
       }
     }
   };
   React.useEffect(() => {
     if (isUser) {
-      navigate('/');
+      // navigate('/profile/id');
     }
     // eslint-disable-next-line
   }, [isUser]);
@@ -95,7 +90,7 @@ function Login() {
       {showLogin && (
         <div className='container shadow mt-2'>
           <div className="row text-end">
-            <Link to="/">
+            <Link to="/explore">
               <p onClick={() => setShowLogin(false)}> <CancelIcon /> </p>
             </Link>
           </div>
