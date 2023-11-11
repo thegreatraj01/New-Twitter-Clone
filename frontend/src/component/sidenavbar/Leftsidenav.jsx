@@ -25,7 +25,7 @@ const LeftSidebar = () => {
 
     return (
 
-        <div className=" d-flex justify-content-between  flex-column  p-3 bg-light " style={{ height: '100vh' }}>
+        <div className=" d-flex justify-content-between  flex-column  p-3 " style={{ height: '100vh' ,backgroundColor:"#FFFFFF" }}>
 
 
             <div className="mt-6 d-flex flex-column gap-3 " >

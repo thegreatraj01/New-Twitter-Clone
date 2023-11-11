@@ -129,10 +129,10 @@ router.put('/api/follow/unfollow/:userId', verifyuser, async (req, res) => {
         const { userId } = req.params;
 
         const userToFollow = await User.findById(userId);
-        console.log('userToFollow', userToFollow);
+        // console.log('userToFollow', userToFollow);
         
         currentuser = await User.findById(req.user._id);
-        console.log('currentuser', currentuser);
+        // console.log('currentuser', currentuser);
 
 
 

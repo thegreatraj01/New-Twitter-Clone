@@ -11,8 +11,9 @@ import { BASE_URL } from '../../Config';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-function TweetModel({ tweet, setTweets, fetchdata }) {
+function TweetModel({ tweet, fetchdata }) {
   // console.log(tweet);
+  // debugger
 
   const CONFIG_OBJ = {
     headers: {
@@ -25,7 +26,6 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
 
   const user = useSelector(state => state.userReducer.user)
   // console.log(user._id);
-  // debugger;
 
 
 
@@ -133,7 +133,20 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
 
 
   return (
-    <div className="bg-body-tertiary p-3 border border-light-subtle mt-2 m-1">
+    <div className=" p-3 border border-light-subtle mt-2 m-1 rounded-3 ">
+      {/* div for show retweeted by users  */}
+      {tweet.retweetBy.length > 0 && <div className="row">
+        <div className="col">
+          {tweet.retweetBy.map((retweet, i) => (
+            <p key={i}>
+              <CachedIcon /> <span>Retweeted by {retweet.username}</span>
+            </p>
+          ))}
+        </div>
+      </div>}
+      {/* Use map to loop through retweetBy array and display each username */}
+
+
       {/* first row */}
       <div className="row">
         {/* for image */}
@@ -159,8 +172,8 @@ function TweetModel({ tweet, setTweets, fetchdata }) {
             {tweet.content}
           </p>
         </div>
-        {tweet.image && <div className='col-12'>
-          <img className="w-100 rounded img-fluid" src={tweet.image} alt='tweetpic' />
+        {tweet.image && <div className='col-12 imghover rounded'>
+          <img className="w-100  img-fluid " src={tweet.image} alt='tweetpic' />
         </div>}
 
       </div>

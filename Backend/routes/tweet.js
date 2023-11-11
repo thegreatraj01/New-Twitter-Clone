@@ -62,7 +62,8 @@ router.get("/api/exploretweet", async (req, res) => {
             path: "comments.commentedBy",
             model: "User",
             select: "_id name profilePic username", // Specify the fields you want to populate
-        });
+        }).populate("retweetBy", "_id name username");
+
         res.status(200).json({ posts: dbPosts });
     } catch (error) {
         console.log(error);
@@ -81,24 +82,24 @@ router.get("/api/timelinetweets", verifyuser, async (req, res) => {
             path: "comments.commentedBy",
             model: "User",
             select: "_id name profilePic username",
-        });
+        }).populate("retweetBy", "_id name username");
 
         // Get tweets of users the current user is following
         const followingTweets = await Tweets.find({ tweetedBy: { $in: currentUser.following } }).populate("tweetedBy", "_id name profilePic username").populate({
             path: "comments.commentedBy",
             model: "User",
             select: "_id name profilePic username",
-        });
+        }).populate("retweetBy", "_id name username");
 
-        // Get tweets that the current user has retweeted
-        const retweetedTweets = await Tweets.find({ retweetBy: req.user._id }).populate("tweetedBy", "_id name profilePic username").populate({
-            path: "comments.commentedBy",
-            model: "User",
-            select: "_id name profilePic username",
-        });
+        // // Get tweets that the current user has retweeted
+        // const retweetedTweets = await Tweets.find({ retweetBy: req.user._id }).populate("tweetedBy", "_id name profilePic username").populate({
+        //     path: "comments.commentedBy",
+        //     model: "User",
+        //     select: "_id name profilePic username",
+        // }).populate("retweetBy", "_id name username");
 
         // Combine the follower's tweets and following tweets
-        let timelineTweets = followersTweets.concat(followingTweets, retweetedTweets);
+        let timelineTweets = followersTweets.concat(followingTweets);
 
         // Use a Set to keep track of unique tweet IDs
         const uniqueTweetIds = new Set();
@@ -129,21 +130,22 @@ router.get("/api/alltweetsbyuser/:id", verifyuser, async (req, res) => {
         const { id } = req.params;
 
         // Get retweeted tweets by the current user
-        const retweetedTweets = await Tweets.find({ retweetBy: id }).populate("tweetedBy", "_id name profilePic username").populate({
-            path: "comments.commentedBy",
-            model: "User",
-            select: "_id name profilePic username", // Specify the fields you want to populate
-        });
+        // const retweetedTweets = await Tweets.find({ retweetBy: id }).populate("tweetedBy", "_id name profilePic username").populate({
+        //     path: "comments.commentedBy",
+        //     model: "User",
+        //     select: "_id name profilePic username", // Specify the fields you want to populate
+        // });
 
         // Get tweets by the specified user
         const userTweets = await Tweets.find({ tweetedBy: id }).populate("tweetedBy", "_id name profilePic username").populate({
             path: "comments.commentedBy",
             model: "User",
             select: "_id name profilePic username", // Specify the fields you want to populate
-        });
+        }).populate("retweetBy", "_id name username");
 
         // Merge retweetedTweets and userTweets into a single array
-        const allTweets = [...userTweets, ...retweetedTweets];
+        // const allTweets = [...userTweets, ...retweetedTweets];
+        const allTweets = userTweets
 
         res.status(200).json({ posts: allTweets });
     } catch (error) {
@@ -213,7 +215,7 @@ router.put('/api/retweet/:id', verifyuser, async (req, res) => {
         const tweet = await Tweets.findById(id);
         // console.log(id)
 
-        if (String(tweet.tweetedBy) === String(req.user._id)){
+        if (String(tweet.tweetedBy) === String(req.user._id)) {
             return res.status(404).json({ error: 'you can not do that ' });
         }
         // Check if the user has already retweeted this tweet

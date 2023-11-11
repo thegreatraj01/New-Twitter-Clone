@@ -16,12 +16,12 @@ function Profile() {
   const currentuser = useSelector(state => state.userReducer.user);
   // console.log(currentuser._id)
   let id = useParams().id;
+  // console.log(id)
 
   const [user, setUser] = useState(null);
   const [formattedDate, setFormattedDate] = useState(null);
 
-  // console.log(user)
-  // debugger
+  // console.log(user);
 
   const fetchdata = async () => {
     try {
@@ -37,6 +37,24 @@ function Profile() {
       console.log('profile error', error);
     }
   };
+
+  // all tweets in tweet model 
+  const [alltweets, setAlltweets] = useState([])
+  const alltweetsindb = async () => {
+    const newData = await axios.get(`${BASE_URL}/exploretweet`);
+    if (newData.status === 200) {
+      setAlltweets(newData.data.posts);
+    }
+  }
+
+  const UserTweets = alltweets.filter(tweet => tweet.tweetedBy._id === user._id);
+  const numberOfCurrentUserTweets = UserTweets.length;
+  const UserReTweets = alltweets.filter(tweet => tweet.retweetBy._id === user._id);
+  const numberOfCurrentUserReTweets = UserReTweets.length;
+
+  // console.log(numberOfCurrentUserTweets);
+  // debugger
+
 
   // function for follow or unfollow a user 
   const handelefollowunfollow = async (id) => {
@@ -56,6 +74,8 @@ function Profile() {
 
   useEffect(() => {
     fetchdata();
+    alltweetsindb();
+
     // eslint-disable-next-line 
   }, [id]);
 
@@ -99,14 +119,16 @@ function Profile() {
                   {formattedDate}
                 </span>
               </p>
+              <p>  Tweets By User <span className='fw-bold ms-3 '> {numberOfCurrentUserTweets}</span> </p>
+              <p>  ReTweets By User <span className='fw-bold ms-3 '> {numberOfCurrentUserReTweets}</span> </p>
               <ul className="list-inline">
                 <li className="list-inline-item mx-2">
-                  <span>{user.followers.length}</span>{' '}
-                  <span className="fw-bolder fs-6">Followers</span>
+                  <span className='fw-bolder text-danger  '>{user.followers.length}</span>{' '}
+                  <span className="fw-medium  ">Followers</span>
                 </li>
                 <li className="list-inline-item mx-2">
-                  <span>{user.following.length}</span>{' '}
-                  <span className="fw-bolder fs-6">Following</span>
+                  <span className='fw-bolder text-danger'>{user.following.length}</span>{' '}
+                  <span className="fw-medium ">Following</span>
                 </li>
                 {currentuser._id !== id && <>
                   {user.followers.includes(currentuser._id) &&

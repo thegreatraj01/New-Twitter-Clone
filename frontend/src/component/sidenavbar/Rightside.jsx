@@ -4,7 +4,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 const RightSide = () => {
   return (
-    <div className="m-3 p-2 bg-light rounded-4 mx-2">
+    <div className="m-3 p-2 icons rounded-4 mx-2">
       <div className="position-relative">
         <SearchIcon className="position-absolute " style={{ right: '15px', top: '50%', transform: 'translateY(-50%)' }} />
         <input type="text" className="form-control rounded-pill px-2 " />
