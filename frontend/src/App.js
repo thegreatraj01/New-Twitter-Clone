@@ -35,8 +35,8 @@ function App() {
 
           {isUser ? <Route path='/' element={<Home />} /> :
             <Route path='/' element={<Explore />} />}
+          {isUser && <Route path='/profile/:id' element={<Profile />} />}
 
-          <Route path='/profile/:id' element={<Profile />} />
           <Route path='/explore' element={<Explore />} />
 
           {/* Error route should be placed at the end */}
