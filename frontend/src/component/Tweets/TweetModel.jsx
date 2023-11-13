@@ -13,7 +13,6 @@ import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 function TweetModel({ tweet, fetchdata }) {
   // console.log(tweet);
-  // debugger
 
   const CONFIG_OBJ = {
     headers: {
@@ -26,6 +25,8 @@ function TweetModel({ tweet, fetchdata }) {
 
   const user = useSelector(state => state.userReducer.user)
   // console.log(user._id);
+  // debugger
+
 
 
 
@@ -79,7 +80,7 @@ function TweetModel({ tweet, fetchdata }) {
       try {
         // for like 
         const data = await axios.put(`${BASE_URL}/like/dislike/${tweet._id}`, userid);
-        console.log("like dislike data ", data);
+        console.log("like dislike data ", data.data);
         fetchdata();
       } catch (error) {
         console.log('Network error:', error.message);
@@ -187,8 +188,11 @@ function TweetModel({ tweet, fetchdata }) {
         <div className="col-4 text-center cursor-pointer" onClick={handleCommentClick}>
           <ChatBubbleOutlineIcon />
         </div>
+        {/* some retweet icon  */}
         <div className="col-4 text-center cursor-pointer">
-          {tweet.retweetBy.includes(user._id) ? <button className='border text-info' onClick={handleretweet}> <CachedIcon /> </button> :
+          {tweet.retweetBy.some(obj => {
+            return obj._id === user._id;
+          }) ? <button className='border text-info' onClick={handleretweet}> <CachedIcon /> </button> :
             <button className='border ' onClick={handleretweet}> <CachedIcon /> </button>}
         </div>
         {/* Comment Box */}

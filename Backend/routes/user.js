@@ -52,7 +52,7 @@ router.post('/api/auth/login', async (req, res) => {
                     const newJwtToken = await jwt.sign({ _id: userInDb._id }, process.env.JWT_SECRET);
                     const { password, ...userInfo } = userInDb._doc
                     return res.json({ result: { token: newJwtToken, user: userInfo } });
-                }else{
+                } else {
                     res.status(401).json({ message: 'wrong password ' });
                 }
 
@@ -92,35 +92,74 @@ router.get('/api/profile/:id', async (req, res) => {
 
 // -----------------------------------------------------------------------------------------------------
 // for update a user in the database
-router.put('/api/auth/updateuser/:id', verifyuser, async (req, res) => {
-    const { id } = req.params;
-    const { name, username, email, password } = req.body;
-
-    if (!id) {
-        return res.status(400).json({ error: "User ID is required" });
+router.put('/api/auth/updateuser', verifyuser, async (req, res) => {
+    const id = req.user._id;
+    const { name, location, dateOfBirth } = req.body;
+    
+    if (!name || !location || !dateOfBirth) {
+        return res.status(400).json({ error: "All feilds all required" });
     } else {
         try {
             const userInDb = await User.findById(id);
+
             if (userInDb) {
                 if (name) userInDb.name = name;
-                if (username) userInDb.username = username;
-                if (email) userInDb.email = email;
-                if (userInDb && userInDb._doc && 'password' in userInDb._doc) {
-                    const { password, ...userInfo } = userInDb._doc;
-                }
+                if (location) userInDb.location = location;
+                if (dateOfBirth) userInDb.dateOfBirth = dateOfBirth;
+
                 await userInDb.save();
+
+                // Destructure password from userInDb before sending response
                 const { password, ...userInfo } = userInDb._doc;
+
                 return res.json({ result: userInfo });
             } else {
-                res.status(404).json({ message: 'User not found' });
+                return res.status(404).json({ message: 'User not found' });
             }
         } catch (error) {
             console.log(error);
-            res.status(500).json({ error: 'Something went wrong' });
+            return res.status(500).json({ error: 'Something went wrong' });
         }
     }
 });
 
+// -----------------------------------------------------------------------------------------------------
+
+// Route to update profile picture
+router.put('/api/update/profile-pic', verifyuser, async (req, res) => {
+    // console.log('API call for updating profile picture');
+    const userId = req.user._id;
+    const { profilePic } = req.body;
+
+
+    try {
+        if (!profilePic) {
+            return res.status(400).json({ error: 'Profile picture is required' });
+        }
+
+        // Find the user by ID and update the profilePic field
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: { profilePic } },
+            { new: true } // Return the updated user
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error('Error updating profile picture:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+router.get('/hi', (req, res) => {
+    res.json({ "kaisa hai re ahu ": "jojojoj" })
+}
+)
 // -----------------------------------------------------------------------------------------------------
 // follow unfollow user 
 
@@ -130,7 +169,7 @@ router.put('/api/follow/unfollow/:userId', verifyuser, async (req, res) => {
 
         const userToFollow = await User.findById(userId);
         // console.log('userToFollow', userToFollow);
-        
+
         currentuser = await User.findById(req.user._id);
         // console.log('currentuser', currentuser);
 

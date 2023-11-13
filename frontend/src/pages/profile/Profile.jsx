@@ -10,18 +10,22 @@ import { parseISO, format } from 'date-fns';
 import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UploadImg from '../../component/UpdateProfile/UploadImg';
+import UploadDetails from '../../component/UpdateProfile/UploadDetails';
 
 function Profile() {
 
   const currentuser = useSelector(state => state.userReducer.user);
-  // console.log(currentuser._id)
+  // console.log(currentuser)
   let id = useParams().id;
   // console.log(id)
 
   const [user, setUser] = useState(null);
   const [formattedDate, setFormattedDate] = useState(null);
+  const [dateOfBirth, setDateOfBirth] = useState(null);
 
   // console.log(user);
+  // debugger
 
   const fetchdata = async () => {
     try {
@@ -72,6 +76,19 @@ function Profile() {
     }
   }
 
+
+  // for user date of birth 
+  useEffect(() => {
+    if (user && user.dateOfBirth) {
+      const dateObject = parseISO(user.dateOfBirth);
+      const dateFormatted = format(dateObject, 'dd/MM/yy');
+      setDateOfBirth(dateFormatted);
+    }
+  }, [user]);
+
+
+
+
   useEffect(() => {
     fetchdata();
     alltweetsindb();
@@ -89,7 +106,6 @@ function Profile() {
             <div className="col-12 profile-sec">
               {/* only for create an empty div */}
             </div>
-
             <div className="col-12 profile-img-sec">
               <div className="profile-img">
                 <Avatar
@@ -99,9 +115,18 @@ function Profile() {
                 />
               </div>
               <div className="float-end mt-1 ">
-                <button className="mt-1 px-3 fs-4 fw-bold border border-info rounded-pill edit-button">
-                  Edit
-                </button>
+                {id === currentuser._id && <span className="mt-1 me-2 px-2  border border-info rounded-pill edit-button">
+                  {/* Upload Profile Picture */}
+                  <UploadImg fetchdata={fetchdata} id={id} />
+                </span>}
+
+                {id === currentuser._id ? <span className="mt-1 me-2 px-2  border border-info rounded-pill edit-button">
+                  {/* Upload Profile Details */}
+                  <UploadDetails fetchdata={fetchdata} />
+                </span> : <button className="mt-1 px-2 fs-6 fw-bold border border-info rounded-pill edit-button">
+                  👻
+                </button>}
+
               </div>
             </div>
           </div>
@@ -113,12 +138,21 @@ function Profile() {
                 <h5 className="fw-bold">@username <span className='text-info '> {user.username}</span> </h5>
                 <h6 className="fw-bold">name :  <span className='text-info '>{user.name}</span></h6>
               </div>
-              <p>
-                <CalendarMonthIcon />Joined :
-                <span className='ms-1 fs-6 fw-bold '>
+              <p className=' d-flex justify-content-between'>
+                <span className=' fs-6 fw-bold '>
+                  <CalendarMonthIcon />Joined : &nbsp;
                   {formattedDate}
                 </span>
+                <span className='me-3 fs-6 fw-bold '> {user.location && <> Location : &nbsp; {user.location}</>}  </span>
               </p>
+              {user.dateOfBirth &&
+                <p>
+                  <span className=' fs-6 fw-bold '>
+                    <CalendarMonthIcon />Date of Birth : &nbsp;
+                    {dateOfBirth}
+                  </span>
+                </p>}
+
               <p>  Tweets By User <span className='fw-bold ms-3 '> {numberOfCurrentUserTweets}</span> </p>
               <p>  ReTweets By User <span className='fw-bold ms-3 '> {numberOfCurrentUserReTweets}</span> </p>
               <ul className="list-inline">
@@ -143,19 +177,15 @@ function Profile() {
                         Follow
                       </button>
                     </li>}
-
-
                 </>}
-
               </ul>
             </div>
-
           </div>
-
           {/* for showing tweets */}
           <div className="row">
             <AllTweet />
           </div>
+
         </>
       ) : (
         // Render a loading state or placeholder if user is null

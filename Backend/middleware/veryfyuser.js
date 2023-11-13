@@ -6,7 +6,7 @@ const verifyuser = async (req, res, next) => {
     const { authorization } = req.headers;
    
     if (!authorization) {
-        res.status(401).json({ message: "user not logged in hai" });
+        res.status(401).json({ message: "user not logged in 1 " });
     } else {
         try {
             const token = authorization;
